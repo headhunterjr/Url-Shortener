@@ -1,0 +1,14 @@
+﻿@model Url
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div>
+	<h3>Original url: @Model.LongUrl</h3>
+	<h3>Shortened url: @Model.ShortUrl</h3>
+	<h5>Created by: @Model.CreatedBy</h5>
+	<h5>Date of creation: @Model.CreatedDate</h5>
+	@if (SignInManager.IsSignedIn(User) && UserManager.GetUserName(User) == Model.CreatedBy)
+	{
+		<a class="btn btn-primary" asp-controller="Url" asp-action="Delete" asp-route-Id=@Model.Id>Delete this url</a>
+	}
+</div>

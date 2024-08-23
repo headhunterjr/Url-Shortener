@@ -1,0 +1,34 @@
+﻿@model UrlTableViewModel
+@inject SignInManager<IdentityUser> SignInManager
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+@if (SignInManager.IsSignedIn(User)){
+    <form method="post" asp-controller="Url" asp-action="Add">
+        <div>
+            <label asp-for="LongUrl">Input the url here:</label>
+            <input asp-for="LongUrl" />
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add Url" />
+    </form>
+}
+<table style="width:90%">
+    <tr>
+        <th>Long Url</th>
+        <th>Short Url</th>
+    </tr>
+    @foreach (Url url in Model.Urls)
+    {
+        <tr>
+            <td>@url.LongUrl</td>
+            <td>@url.ShortUrl</td>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <td><a class="btn btn-primary" asp-controller="Url" asp-action="ShortUrlInfo" asp-route-Id=@url.Id>Details</a></td>
+            }
+        </tr>
+    }
+</table>
