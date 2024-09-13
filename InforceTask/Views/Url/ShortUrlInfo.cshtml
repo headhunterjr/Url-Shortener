@@ -9,6 +9,6 @@
 	<h5>Date of creation: @Model.CreatedDate</h5>
 	@if (SignInManager.IsSignedIn(User) && UserManager.GetUserName(User) == Model.CreatedBy)
 	{
-		<a class="btn btn-primary" asp-controller="Url" asp-action="Delete" asp-route-Id=@Model.Id>Delete this url</a>
+		<a class="btn btn-danger" asp-controller="Url" asp-action="Delete" asp-route-Id=@Model.Id>Delete this url</a>
 	}
 </div>

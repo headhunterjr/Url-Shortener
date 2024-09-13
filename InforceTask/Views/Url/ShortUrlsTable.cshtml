@@ -1,34 +1,61 @@
 ﻿@model UrlTableViewModel
 @inject SignInManager<IdentityUser> SignInManager
 
-<style>
-    table, th, td {
-        border: 1px solid black;
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<div ng-app="urlApp" ng-controller="urlController">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+
+    @if (SignInManager.IsSignedIn(User)){
+        <form ng-submit="addUrl()">
+            <div>
+                <label for="longUrl">Input the url here:</label>
+                <input type="text" ng-model="newUrl.longUrl" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Url</button>
+        </form>
     }
-</style>
-@if (SignInManager.IsSignedIn(User)){
-    <form method="post" asp-controller="Url" asp-action="Add">
-        <div>
-            <label asp-for="LongUrl">Input the url here:</label>
-            <input asp-for="LongUrl" />
-        </div>
-        <input type="submit" class="btn btn-primary" value="Add Url" />
-    </form>
-}
-<table style="width:90%">
-    <tr>
-        <th>Long Url</th>
-        <th>Short Url</th>
-    </tr>
-    @foreach (Url url in Model.Urls)
-    {
+
+    <table style="width:90%">
         <tr>
-            <td>@url.LongUrl</td>
-            <td>@url.ShortUrl</td>
-            @if (SignInManager.IsSignedIn(User))
-            {
-                <td><a class="btn btn-primary" asp-controller="Url" asp-action="ShortUrlInfo" asp-route-Id=@url.Id>Details</a></td>
-            }
+            <th>Long Url</th>
+            <th>Short Url</th>
+            <th>Actions</th>
         </tr>
-    }
-</table>
+        <tr ng-repeat="url in urls">
+            <td>{{ url.longUrl }}</td>
+            <td>{{ url.shortUrl }}</td>
+            <td>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a class="btn btn-primary" href="/Url/ShortUrlInfo/{{ url.id }}">Details</a>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    var app = angular.module('urlApp', []);
+
+    app.controller('urlController', function($scope, $http) {
+        $scope.urls = @Html.Raw(Json.Serialize(Model.Urls));
+
+        $scope.addUrl = function () {
+            $http.post('/Url/Add', $scope.newUrl).then(function (response) {
+                $scope.urls.push(response.data);
+                $scope.newUrl = {};
+            }).catch(function (error) {
+                if (error.status === 400) {
+                    alert("Error: " + error.data);
+                } else {
+                    console.error("Error adding URL:", error);
+                }
+            });
+        };
+    });
+</script>

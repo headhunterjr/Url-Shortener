@@ -45,7 +45,7 @@ namespace InforceTask.Controllers
 		}
 		[HttpPost]
 		[Authorize]
-		public async Task<IActionResult> Add(UrlAddViewModel urlAddViewModel)
+		public async Task<IActionResult> Add([FromBody] UrlAddViewModel urlAddViewModel)
 		{
 			Url urlToAdd = new Url
 			{
@@ -57,10 +57,10 @@ namespace InforceTask.Controllers
 			var urls = await _urlRepository.GetAllUrlsAsync();
 			if (urls.Any(u => u.LongUrl == urlToAdd.LongUrl || u.ShortUrl == urlToAdd.ShortUrl))
 			{
-				return RedirectToAction("Error", "Home");
+				return BadRequest("Duplicate URL");
 			}
 			await _urlRepository.AddUrlAsync(urlToAdd);
-            return RedirectToAction(nameof(ShortUrlsTable));
+			return Ok(urlToAdd);
 		}
 		[Authorize]
 		public async Task<IActionResult> Delete(int id)
